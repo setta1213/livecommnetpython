@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Comment Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 15px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+    .box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .box h2 {
+      margin-top: 0;
+      color: #2563eb;
+    }
+    ul {
+      padding-left: 18px;
+    }
+    li {
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    a.chat-btn {
+      text-decoration: none;
+      color: #2563eb;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📺 Live Comment Monitor</h1>
+
+<div class="grid">
+  {% for k in keywords %}
+  <div class="box">
+    <h2>{{ k | upper }}</h2>
+    <ul id="{{ k }}"></ul>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+async function loadData() {
+  const res = await fetch("/data");
+  const data = await res.json();
+
+  for (const key in data) {
+    const ul = document.getElementById(key);
+    ul.innerHTML = "";
+
+    data[key].forEach(name => {
+      const li = document.createElement("li");
+
+      const span = document.createElement("span");
+      span.textContent = name;
+
+      const btn = document.createElement("a");
+      btn.textContent = "💬 ทักแชท";
+      btn.href = "https://www.facebook.com/search/top?q=" + encodeURIComponent(name);
+      btn.target = "_blank";
+      btn.className = "chat-btn";
+
+      li.appendChild(span);
+      li.appendChild(btn);
+      ul.appendChild(li);
+    });
+  }
+}
+
+setInterval(loadData, 2000);
+loadData();
+</script>
+
+</body>
+</html>
